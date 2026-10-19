@@ -1,0 +1,168 @@
+ACTIVITY_MAIN.XML
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:padding="16dp"
+   android:background="#F5F5F5">
+
+   <TextView
+       android:id="@+id/timerText"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_centerHorizontal="true"
+       android:layout_marginTop="50dp"
+       android:text="00:00:00"
+       android:textSize="48sp"
+       android:textColor="#000000"
+       android:fontFamily="sans-serif-bold"/>
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_below="@id/timerText"
+       android:layout_marginTop="40dp"
+       android:orientation="horizontal"
+       android:gravity="center">
+
+       <Button
+           android:id="@+id/startButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Start"
+           android:backgroundTint="#4CAF50"
+           android:textColor="#FFFFFF"
+           android:layout_marginEnd="10dp"/>
+
+       <Button
+           android:id="@+id/pauseButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Pause"
+           android:backgroundTint="#FFC107"
+           android:textColor="#FFFFFF"
+           android:layout_marginEnd="10dp"/>
+
+       <Button
+           android:id="@+id/resetButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Reset"
+           android:backgroundTint="#F44336"
+           android:textColor="#FFFFFF"/>
+
+   </LinearLayout>
+
+</RelativeLayout>
+
+MAINACTIVITY.JAVA
+	
+package com.example.timerapp;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+   private TextView timerText;
+   private Button startButton, pauseButton, resetButton;
+   private Handler handler = new Handler();
+   private long startTime = 0L;
+   private long timeInMilliseconds = 0L;
+   private long timeSwapBuff = 0L;
+   private long updatedTime = 0L;
+   private boolean isRunning = false;
+
+   private Runnable updateTimerThread = new Runnable() {
+       public void run() {
+           timeInMilliseconds = System.currentTimeMillis() - startTime;
+           updatedTime = timeSwapBuff + timeInMilliseconds;
+
+           int secs = (int) (updatedTime / 1000);
+           int mins = secs / 60;
+           int hrs = mins / 60;
+           secs = secs % 60;
+           mins = mins % 60;
+
+           timerText.setText(String.format("%02d:%02d:%02d", hrs, mins, secs));
+           handler.postDelayed(this, 1000);
+       }
+   };
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+       super.onCreate(savedInstanceState);
+       setContentView(R.layout.activity_main);
+
+       timerText = findViewById(R.id.timerText);
+       startButton = findViewById(R.id.startButton);
+       pauseButton = findViewById(R.id.pauseButton);
+       resetButton = findViewById(R.id.resetButton);
+
+       startButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               if (!isRunning) {
+                   startTime = System.currentTimeMillis();
+                   handler.postDelayed(updateTimerThread, 0);
+                   isRunning = true;
+               }
+           }
+       });
+
+       pauseButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               if (isRunning) {
+                   timeSwapBuff += timeInMilliseconds;
+                   handler.removeCallbacks(updateTimerThread);
+                   isRunning = false;
+               }
+           }
+       });
+
+       resetButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               startTime = 0L;
+               timeInMilliseconds = 0L;
+               timeSwapBuff = 0L;
+               updatedTime = 0L;
+               handler.removeCallbacks(updateTimerThread);
+               timerText.setText("00:00:00");
+               isRunning = false;
+           }
+       });
+   }
+}
+
+
+ANDROIDMAINFEST.XML
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+   package="com.example.timerapp">
+
+   <application
+       android:allowBackup="true"
+       android:icon="@mipmap/ic_launcher"
+       android:label="@string/app_name"
+       android:roundIcon="@mipmap/ic_launcher_round"
+       android:supportsRtl="true"
+       android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+       <activity
+           android:name=".MainActivity"
+           android:exported="true">
+           <intent-filter>
+               <action android:name="android.intent.action.MAIN" />
+               <category android:name="android.intent.category.LAUNCHER" />
+           </intent-filter>
+       </activity>
+   </application>
+
+</manifest>

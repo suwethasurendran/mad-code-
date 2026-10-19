@@ -1,0 +1,114 @@
+ACTIVITY_MAIN.XML
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:padding="16dp"
+   android:background="#F5F5F5">
+
+   <TextView
+       android:id="@+id/titleText"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_centerHorizontal="true"
+       android:layout_marginTop="50dp"
+       android:text="Student Notification App"
+       android:textSize="24sp"
+       android:textColor="#000000"
+       android:fontFamily="sans-serif-bold"/>
+
+   <Button
+       android:id="@+id/toastButton"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_below="@id/titleText"
+       android:layout_centerHorizontal="true"
+       android:layout_marginTop="40dp"
+       android:text="Show Toast Notification"
+       android:backgroundTint="#4CAF50"
+       android:textColor="#FFFFFF"/>
+
+   <Button
+       android:id="@+id/dialogButton"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_below="@id/toastButton"
+       android:layout_centerHorizontal="true"
+       android:layout_marginTop="20dp"
+       android:text="Show Alert Dialog"
+       android:backgroundTint="#2196F3"
+       android:textColor="#FFFFFF"/>
+
+</RelativeLayout>
+
+
+MAINACTIVITY.JAVA
+
+package com.example.notificationapp;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+       super.onCreate(savedInstanceState);
+       setContentView(R.layout.activity_main);
+
+       Button toastButton = findViewById(R.id.toastButton);
+       Button dialogButton = findViewById(R.id.dialogButton);
+
+       toastButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Toast.makeText(MainActivity.this, "Assignment due tomorrow at 11:59 PM!", Toast.LENGTH_LONG).show();
+           }
+       });
+
+       dialogButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+               builder.setTitle("Class Reminder")
+                       .setMessage("Your next class, CS101, is in 30 minutes in Room 204.")
+                       .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                       .setNegativeButton("Snooze", (dialog, which) -> Toast.makeText(MainActivity.this, "Snoozed for 10 minutes", Toast.LENGTH_SHORT).show())
+                       .setCancelable(true);
+               AlertDialog dialog = builder.create();
+               dialog.show();
+           }
+       });
+   }
+}
+
+
+ANDROIDMAINFEST.XML
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+   package="com.example.notificationapp">
+
+   <application
+       android:allowBackup="true"
+       android:icon="@mipmap/ic_launcher"
+       android:label="@string/app_name"
+       android:roundIcon="@mipmap/ic_launcher_round"
+       android:supportsRtl="true"
+       android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+       <activity
+           android:name=".MainActivity"
+           android:exported="true">
+           <intent-filter>
+               <action android:name="android.intent.action.MAIN" />
+               <category android:name="android.intent.category.LAUNCHER" />
+           </intent-filter>
+       </activity>
+   </application>
+
+</manifest>

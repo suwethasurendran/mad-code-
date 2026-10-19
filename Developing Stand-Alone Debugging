@@ -1,0 +1,105 @@
+activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stand Alone Debugging Tool"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center" />
+    <EditText
+        android:id="@+id/debugInputEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your debug message"
+        android:layout_marginTop="20dp" />
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send to Debugger"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"/>
+    <TextView
+        android:id="@+id/debugOutputTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"/>
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+AndroidManifest.xml :
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.standalonedebugging">
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"> <!-- Specify exported attribute -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+
+MainActivity.java :
+
+package com.example.standalonedebugging;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+    private EditText debugInputEditText;
+    private Button sendButton;
+    private TextView debugOutputTextView;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        debugInputEditText = findViewById(R.id.debugInputEditText);
+        sendButton = findViewById(R.id.sendButton);
+        debugOutputTextView = findViewById(R.id.debugOutputTextView);
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleDebugMessage();
+            }
+        });
+    }
+    private void handleDebugMessage() {
+        String debugMessage = debugInputEditText.getText().toString();
+        if (!debugMessage.isEmpty()) {
+            Log.d("DebugMessage", debugMessage); // Log the message for debugging
+            debugOutputTextView.setText("Sent to debugger: " + debugMessage);
+            debugInputEditText.setText(""); // Clear the input field
+        }
+    }
+}

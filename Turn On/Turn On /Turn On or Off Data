@@ -1,0 +1,102 @@
+ACTIVITY_MAIN.XML
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:orientation="vertical"
+   android:gravity="center"
+   android:padding="16dp">
+
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Mobile Data Toggle"
+       android:textSize="24sp"
+       android:textStyle="bold"
+       android:layout_marginBottom="20dp"/>
+
+   <Button
+       android:id="@+id/toggleButton"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Toggle Mobile Data"
+       android:textSize="18sp"/>
+
+</LinearLayout>
+
+
+MAINACTIVITY.JAVA
+	
+package com.example.mobiledatatoggle;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import java.lang.reflect.Method;
+
+public class MainActivity extends AppCompatActivity {
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+       super.onCreate(savedInstanceState);
+       setContentView(R.layout.activity_main);
+
+       Button toggleButton = findViewById(R.id.toggleButton);
+       toggleButton.setOnClickListener(v -> toggleMobileData());
+   }
+
+   private void toggleMobileData() {
+       try {
+           ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+           Method setMobileDataEnabledMethod = ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
+           setMobileDataEnabledMethod.setAccessible(true);
+
+           // Check current mobile data state
+           Method getMobileDataEnabledMethod = ConnectivityManager.class.getDeclaredMethod("getMobileDataEnabled");
+           getMobileDataEnabledMethod.setAccessible(true);
+           boolean isMobileDataEnabled = (Boolean) getMobileDataEnabledMethod.invoke(connectivityManager);
+
+           // Toggle mobile data
+           setMobileDataEnabledMethod.invoke(connectivityManager, !isMobileDataEnabled);
+           Toast.makeText(this, "Mobile Data " + (!isMobileDataEnabled ? "Enabled" : "Disabled"), Toast.LENGTH_SHORT).show();
+       } catch (Exception e) {
+           e.printStackTrace();
+           Toast.makeText(this, "Error toggling mobile data. Requires system-level access.", Toast.LENGTH_LONG).show();
+       }
+   }
+}
+
+
+
+ANDROIDMAINFEST.XML
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+   package="com.example.mobiledatatoggle">
+
+   <!-- Permissions required for modifying network settings -->
+   <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+   <application
+       android:allowBackup="true"
+       android:icon="@mipmap/ic_launcher"
+       android:label="@string/app_name"
+       android:roundIcon="@mipmap/ic_launcher_round"
+       android:supportsRtl="true"
+       android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+       <activity
+           android:name=".MainActivity"
+           android:exported="true">
+           <intent-filter>
+               <action android:name="android.intent.action.MAIN" />
+               <category android:name="android.intent.category.LAUNCHER" />
+           </intent-filter>
+       </activity>
+   </application>
+
+</manifest>
+

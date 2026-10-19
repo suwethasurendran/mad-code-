@@ -1,0 +1,141 @@
+MainActivity.java
+package com.example.loginpageapp;
+
+ import android.os.Bundle;
+ import android.view.View;
+ import android.widget.Button;
+ import android.widget.EditText;
+ import android.widget.TextView;
+
+ import androidx.appcompat.app.AppCompatActivity;
+
+ public class MainActivity extends AppCompatActivity {
+
+ 	private EditText usernameInput;
+ 	private EditText passwordInput;
+ 	private TextView statusText;
+
+ 	@Override
+ 	protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+     	setContentView(R.layout.activity_main);
+
+     	usernameInput = findViewById(R.id.usernameInput);
+     	passwordInput = findViewById(R.id.passwordInput);
+     	statusText = findViewById(R.id.statusText);
+     	Button loginButton = findViewById(R.id.loginButton);
+
+         loginButton.setOnClickListener(new View.OnClickListener() {
+         	@Override
+         	public void onClick(View v) {
+             	handleLogin();
+         	}
+     	});
+ 	}
+
+ 	private void handleLogin() {
+     	String username = usernameInput.getText().toString();
+     	String password = passwordInput.getText().toString();
+
+     	if (username.isEmpty() || password.isEmpty()) {
+             statusText.setText("Please enter both username and password.");
+     	} else if (username.equals("user") && password.equals("pass")) {
+             statusText.setText("Login successful!");
+         	// Proceed to another activity or perform login operations
+     	} else {
+             statusText.setText("Invalid username or password.");
+     	}
+ 	}
+ }
+ 
+activity_main.xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+ <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+ 	android:padding="16dp">
+
+ 	<TextView
+         android:id="@+id/usernameLabel"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+     	android:text="Username"
+     	android:textSize="18sp"
+         android:layout_alignParentTop="true"
+     	android:layout_marginTop="40dp"/>
+
+ 	<EditText
+         android:id="@+id/usernameInput"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_below="@+id/usernameLabel"
+         android:layout_marginTop="8dp"
+     	android:hint="Enter username"
+         android:inputType="text"/>
+
+ 	<TextView
+         android:id="@+id/passwordLabel"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+     	android:text="Password"
+     	android:textSize="18sp"
+         android:layout_below="@+id/usernameInput"
+         android:layout_marginTop="24dp"/>
+
+ 	<EditText
+         android:id="@+id/passwordInput"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_below="@+id/passwordLabel"
+         android:layout_marginTop="8dp"
+     	android:hint="Enter password"
+         android:inputType="textPassword"/>
+
+ 	<Button
+         android:id="@+id/loginButton"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+     	android:text="Login"
+         android:layout_below="@+id/passwordInput"
+         android:layout_marginTop="24dp"
+         android:layout_centerHorizontal="true"/>
+
+ 	<TextView
+         android:id="@+id/statusText"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+     	android:text=""
+         android:textColor="#FF0000"
+         android:layout_below="@+id/loginButton"
+         android:layout_marginTop="16dp"
+     	android:layout_centerHorizontal="true"/>
+
+ </RelativeLayout>
+
+AndroidManifest.xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+ 	package="com.example.loginpageapp">
+
+ 	<application
+         android:allowBackup="true"
+         android:icon="@mipmap/ic_launcher"
+         android:label="@string/app_name"
+         android:roundIcon="@mipmap/ic_launcher_round"
+         android:supportsRtl="true"
+         android:theme="@style/Base.Theme.Loginpageapp">
+     	<activity
+             android:name=".MainActivity"
+             android:exported="true">
+         	<intent-filter>
+             	<action android:name="android.intent.action.MAIN" />
+       	      <category android:name="android.intent.category.LAUNCHER" />
+         	</intent-filter>
+     	</activity>
+ 	</application>
+
+ </manifest>

@@ -1,0 +1,139 @@
+ACTIVITY_MAIN.XML
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:orientation="vertical">
+
+   <!-- Navigation Bar -->
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       android:padding="8dp"
+       android:background="@android:color/darker_gray">
+
+       <EditText
+           android:id="@+id/urlInput"
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:hint="Enter URL"
+           android:inputType="textUri"
+           android:text="https://www.example.com" />
+
+       <Button
+           android:id="@+id/goButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Go" />
+
+       <Button
+           android:id="@+id/backButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Back" />
+
+       <Button
+           android:id="@+id/forwardButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="Forward" />
+
+   </LinearLayout>
+
+   <!-- WebView -->
+   <WebView
+       android:id="@+id/webView"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent" />
+
+</LinearLayout>
+
+
+MAINACTIVITY.JAVA
+	
+package com.example.studentwebapp;
+
+import android.os.Bundle;
+import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+   private WebView webView;
+   private EditText urlInput;
+   private Button goButton, backButton, forwardButton;
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+       super.onCreate(savedInstanceState);
+       setContentView(R.layout.activity_main);
+
+       // Initialize UI components
+       webView = findViewById(R.id.webView);
+       urlInput = findViewById(R.id.urlInput);
+       goButton = findViewById(R.id.goButton);
+       backButton = findViewById(R.id.backButton);
+       forwardButton = findViewById(R.id.forwardButton);
+
+       // Configure WebView settings
+       WebSettings webSettings = webView.getSettings();
+       webSettings.setJavaScriptEnabled(true); // Enable JavaScript for interactive websites
+       webSettings.setBuiltInZoomControls(true); // Enable zoom controls
+       webSettings.setDisplayZoomControls(false); // Hide zoom buttons
+
+       // Set WebViewClient to handle page navigation within the WebView
+       webView.setWebViewClient(new WebViewClient());
+
+       // Load initial URL
+       webView.loadUrl(urlInput.getText().toString());
+
+       // Go button click listener
+       goButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               String url = urlInput.getText().toString();
+               if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                   url = "https://" + url;
+               }
+               webView.loadUrl(url);
+           }
+       });
+
+       // Back button click listener
+       backButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               if (webView.canGoBack()) {
+                   webView.goBack();
+               }
+           }
+       });
+
+       // Forward button click listener
+       forwardButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               if (webView.canGoForward()) {
+                   webView.goForward();
+               }
+           }
+       });
+   }
+
+   @Override
+   public void onBackPressed() {
+       if (webView.canGoBack()) {
+           webView.goBack();
+       } else {
+           super.onBackPressed();
+       }
+   }
+}
